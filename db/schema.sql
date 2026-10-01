@@ -1,0 +1,19 @@
+CREATE TABLE folders (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    parent_id INT REFERENCES folders(id) ON DELETE CASCADE,
+    owner_id VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE files (
+    id SERIAL PRIMARY KEY,
+    original_name VARCHAR(255) NOT NULL,
+    storage_filename VARCHAR(255) NOT NULL,
+    mime_type VARCHAR(128) NOT NULL,
+    size_bytes BIGINT NOT NULL,
+    folder_id INT REFERENCES folders(id) ON DELETE CASCADE,
+    owner_id VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
