@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
         console.warn('Caught malformed JSON request:', err.message);
         return res.status(400).json({ status: 'error', message: 'Bad JSON format' });
     }
-    next();
+    next(err);
 });
 
 module.exports = app;
