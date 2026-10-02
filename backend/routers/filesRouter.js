@@ -35,7 +35,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 
     const userId = req.user.id;
-    const folderId = req.body.folder_id || null;
+    const folderId = req.body?.folder_id || null;
     const { originalname, filename, mimetype, size, path: tempPath } = req.file;
 
     try {
