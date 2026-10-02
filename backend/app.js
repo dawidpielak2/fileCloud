@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const pool = require('./db/pool');
 const authMiddleware = require('./middlewares/authMiddleware');
-const folderRouter = require('./routers/folderRouters');
-const filesRouter = require('./routers/filesRouters');
+const folderRouter = require('./routers/folderRouter');
+const filesRouter = require('./routers/filesRouter');
 
 const app = express();
 
