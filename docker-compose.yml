@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     ports:
       - 5432:5432
     environment:
@@ -20,6 +21,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
+    restart: unless-stopped
     command:
       - start-dev
     environment:
@@ -37,6 +39,7 @@ services:
 
   backend:
     build: ./backend
+    restart: unless-stopped
     environment:
       SERVER_PORT: ${SERVER_PORT}
       DATABASE_URL: ${DATABASE_URL}
@@ -45,8 +48,10 @@ services:
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     depends_on:
-      - postgres
-      - keycloak
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
 
 volumes:
   postgres_data:
