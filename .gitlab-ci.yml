@@ -1,0 +1,41 @@
+stages:
+  - lint
+  - test
+
+variables:
+  NODE_VERSION: "20"
+
+lint:
+  stage: lint
+  image: node:${NODE_VERSION}-alpine
+  cache:
+    key: backend-depts
+    paths:
+      - backend/node_modules/
+  script:
+    - cd backend
+    - npm install 
+    - npm run lint 
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" 
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" 
+test:
+  stage: test
+  image: node:${NODE_VERSION}-alpine
+  cache:
+    key: backend-depts
+    paths:
+      - backend/node_modules/
+  script:
+    - cd backend
+    - npm install
+    - npm run test
+  artifacts:
+    when: always
+    reports:
+      junit: backend/test-report.xml
+    paths:
+      - backend/coverage/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
