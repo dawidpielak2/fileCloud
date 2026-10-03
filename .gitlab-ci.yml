@@ -36,6 +36,7 @@ test:
       junit: backend/test-report.xml
     paths:
       - backend/coverage/
+    expire_in: 7 days
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
