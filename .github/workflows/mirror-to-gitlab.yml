@@ -1,6 +1,7 @@
 name: Mirror to GitLab
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - '**'
@@ -20,4 +21,5 @@ jobs:
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          git push https://oauth2:${GITLAB_TOKEN}@gitlab.com/dawidpielak2/fileCloud.git --all --tags --force
+          git push --force "https://oauth2:${GITLAB_TOKEN}@gitlab.com/dawidpielak2/fileCloud.git" --all
+          git push --force "https://oauth2:${GITLAB_TOKEN}@gitlab.com/dawidpielak2/fileCloud.git" --tags
