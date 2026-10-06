@@ -1,6 +1,7 @@
 stages:
   - lint
-  - test
+  - test-unit
+  - test-integration
   - build
 
 variables:
@@ -20,8 +21,8 @@ lint:
   rules:
     - if: $CI_COMMIT_BRANCH == "main" 
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" 
-test:
-  stage: test
+test_unit:
+  stage: test-unit
   image: node:${NODE_VERSION}-alpine
   cache:
     key: backend-depts
@@ -30,7 +31,7 @@ test:
   script:
     - cd backend
     - npm install
-    - npm run test
+    - npm run test:unit
   artifacts:
     when: always
     reports:
