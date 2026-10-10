@@ -31,9 +31,9 @@ lint:
 gitleaks:
   stage: test
   image: zricethezav/gitleaks:v8.18.2
+  entrypoint: [""]
   script:
     - gitleaks detect --source=. --report-path=gitleaks-report.json --verbose
-    - cat gitleaks-report.json
   artifacts:
     name: "gitleaks-report-${CI_COMMIT_SHORT_SHA}"
     when: always
