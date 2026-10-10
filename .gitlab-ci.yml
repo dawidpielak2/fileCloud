@@ -1,14 +1,23 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "gitlab-ci-test"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
 stages:
-  - lint
-  - test-unit
-  - test-integration
+  - test  
   - build
+  - integration
 
 variables:
+  GIT_DEPTH: "0" # ensures full repository access for gitleaks
   NODE_VERSION: "20"
 
+# ==========================================
+# TEST
+# ==========================================
 lint:
-  stage: lint
+  stage: test
   image: node:${NODE_VERSION}-alpine
   cache:
     key: backend-depts
@@ -18,11 +27,22 @@ lint:
     - cd backend
     - npm install 
     - npm run lint 
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main" 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" 
+
+gitleaks:
+  stage: test
+  image: zricethezav/gitleaks:v8.18.2
+  script:
+    - gitleaks detect --source=. --report-path=gitleaks-report.json --verbose
+    - cat gitleaks-report.json
+  artifacts:
+    name: "gitleaks-report-${CI_COMMIT_SHORT_SHA}"
+    when: always
+    paths:
+      - gitleaks-report.json
+    expire_in: 7 days
+
 test_unit:
-  stage: test-unit
+  stage: test
   image: node:${NODE_VERSION}-alpine
   cache:
     key: backend-depts
@@ -39,9 +59,10 @@ test_unit:
     paths:
       - backend/coverage/
     expire_in: 7 days
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# ==========================================
+# BUILD
+# ==========================================
 
 build_backend:
   stage: build
@@ -55,12 +76,13 @@ build_backend:
   script:
     - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/backend:latest ./backend
     - if [ "$CI_COMMIT_BRANCH" == "main" ]; then docker push $CI_REGISTRY_IMAGE/backend --all-tags; fi
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# ==========================================
+# INTEGRATION
+# ==========================================
 
 run_integration_tests:
-  stage: test-integration
+  stage: integration
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
@@ -77,5 +99,3 @@ run_integration_tests:
     - npm run test:integration --prefix backend
   after_script:
     - docker compose down -v
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
