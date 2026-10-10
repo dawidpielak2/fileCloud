@@ -6,11 +6,13 @@ const pool = require('./db/pool');
 const authMiddleware = require('./middlewares/authMiddleware');
 const folderRouter = require('./routers/folderRouter');
 const filesRouter = require('./routers/filesRouter');
+const helmet = require('helmet'); 
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(helmet());
 
 // Audit Logging: Logs every incoming request and response status
 app.use(morgan(':date[iso] | :remote-addr | :method :url | Status: :status | Response Time: :response-time ms'));
@@ -19,7 +21,7 @@ app.use(morgan(':date[iso] | :remote-addr | :method :url | Status: :status | Res
 const apiLimiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 100, // Limit each IP to 100 requests per windowMs
-    message: { status: 'error', message: 'Too many requests from this IP, please try again after a while' },
+    message: { status: 'error', message: 'Too many requests from this IP, please  try again after a while' },
     standardHeaders: true,
     legacyHeaders: false,
 });

@@ -106,7 +106,7 @@ router.delete('/:id', async (req, res) => {
 
         let selectQuery = 'SELECT storage_filename FROM files WHERE id = $1';
         let selectParams = [fileId];
-        
+
         if (!isAdmin) {
             selectQuery += ' AND owner_id = $2';
             selectParams.push(userId);
@@ -122,7 +122,7 @@ router.delete('/:id', async (req, res) => {
 
         let deleteQuery = 'DELETE FROM files WHERE id = $1';
         let deleteParams = [fileId];
-        
+
         if (!isAdmin) {
             deleteQuery += ' AND owner_id = $2';
             deleteParams.push(userId);
