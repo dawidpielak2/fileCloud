@@ -17,7 +17,7 @@ variables:
 # TEST
 # ==========================================
 lint:
-  stage: test1
+  stage: test
   image: node:${NODE_VERSION}-alpine
   cache:
     key: backend-depts
