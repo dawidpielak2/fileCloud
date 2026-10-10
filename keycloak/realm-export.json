@@ -56,6 +56,22 @@
       "containerId" : "9acad812-b641-44d7-8dd8-2a63909c4136",
       "attributes" : { }
     }, {
+      "id" : "57f01f32-299b-438d-a14d-87781d59da80",
+      "name" : "user",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "9acad812-b641-44d7-8dd8-2a63909c4136",
+      "attributes" : { }
+    }, {
+      "id" : "9ed4715f-2791-4651-838d-4f8d8b26593a",
+      "name" : "admin",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "9acad812-b641-44d7-8dd8-2a63909c4136",
+      "attributes" : { }
+    }, {
       "id" : "40697cb2-20b1-4577-8513-fa8690f90db8",
       "name" : "default-roles-file-cloud",
       "description" : "${role_default-roles}",
@@ -429,7 +445,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-file-cloud" ],
+    "realmRoles" : [ "admin", "default-roles-file-cloud" ],
     "notBefore" : 0,
     "groups" : [ ]
   } ],
@@ -583,8 +599,8 @@
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "http://localhost:3000/*" ],
-    "webOrigins" : [ " http://localhost:3000" ],
+    "redirectUris" : [ "http://127.0.0.1:3000/*", "http://localhost:3000/*" ],
+    "webOrigins" : [ "http://127.0.0.1:3000", "http://localhost:3000" ],
     "notBefore" : 0,
     "bearerOnly" : false,
     "consentRequired" : false,
@@ -600,7 +616,7 @@
       "oauth2.jwt.authorization.grant.enabled" : "false",
       "standard.token.exchange.enabled" : "false",
       "frontchannel.logout.session.required" : "true",
-      "post.logout.redirect.uris" : "http://localhost:3000/*",
+      "post.logout.redirect.uris" : "http://localhost:3000/*##http://127.0.0.1:3000/*",
       "oauth2.device.authorization.grant.enabled" : "false",
       "backchannel.logout.revoke.offline.tokens" : "false",
       "realm_client" : "false",
@@ -1523,7 +1539,7 @@
     }, {
       "authenticator" : "auth-otp-form",
       "authenticatorFlow" : false,
-      "requirement" : "ALTERNATIVE",
+      "requirement" : "REQUIRED",
       "priority" : 30,
       "autheticatorFlow" : false,
       "userSetupAllowed" : false
