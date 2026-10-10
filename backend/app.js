@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
 const pool = require('./db/pool');
 const authMiddleware = require('./middlewares/authMiddleware');
 const folderRouter = require('./routers/folderRouter');
@@ -9,6 +11,19 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Audit Logging: Logs every incoming request and response status
+app.use(morgan(':date[iso] | :remote-addr | :method :url | Status: :status | Response Time: :response-time ms'));
+
+// Rate Limiting & Brute Force Prevention
+const apiLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: { status: 'error', message: 'Too many requests from this IP, please try again after a while' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use('/api/', apiLimiter);
 
 // Verifies database connection status
 app.get('/api/health', async (req, res) => {

@@ -91,29 +91,52 @@ router.delete('/:id', async (req, res) => {
     try {
         const folderId = req.params.id;
         const userId = req.user.id;
+        const isAdmin = req.user.roles && req.user.roles.includes('admin');
 
-        const checkFolder = await pool.query(
-            'SELECT id FROM folders WHERE id = $1 AND owner_id = $2',
-            [folderId, userId]
-        );
+        let checkFolderQuery = 'SELECT id FROM folders WHERE id = $1';
+        let checkFolderParams = [folderId];
+        
+        if (!isAdmin) {
+            checkFolderQuery += ' AND owner_id = $2';
+            checkFolderParams.push(userId);
+        }
+
+        const checkFolder = await pool.query(checkFolderQuery, checkFolderParams);
 
         if (checkFolder.rows.length === 0) {
             return res.status(404).json({ error: 'Folder not found or unauthorized' });
         }
 
         // CTE to find all nested subfolders and their associated files
-        const recursiveQuery = `
-      WITH RECURSIVE subfolders AS (
-        SELECT id FROM folders WHERE id = $1 AND owner_id = $2
-        UNION ALL
-        SELECT f.id FROM folders f
-        INNER JOIN subfolders s ON f.parent_id = s.id
-      )
-      SELECT storage_filename FROM files 
-      WHERE folder_id IN (SELECT id FROM subfolders) AND owner_id = $2;
-    `;
+        let recursiveQuery;
+        let queryParams = [folderId];
 
-        const filesToDelete = await pool.query(recursiveQuery, [folderId, userId]);
+        if (isAdmin) {
+            recursiveQuery = `
+              WITH RECURSIVE subfolders AS (
+                SELECT id FROM folders WHERE id = $1
+                UNION ALL
+                SELECT f.id FROM folders f
+                INNER JOIN subfolders s ON f.parent_id = s.id
+              )
+              SELECT storage_filename FROM files 
+              WHERE folder_id IN (SELECT id FROM subfolders);
+            `;
+        } else {
+            recursiveQuery = `
+              WITH RECURSIVE subfolders AS (
+                SELECT id FROM folders WHERE id = $1 AND owner_id = $2
+                UNION ALL
+                SELECT f.id FROM folders f
+                INNER JOIN subfolders s ON f.parent_id = s.id
+              )
+              SELECT storage_filename FROM files 
+              WHERE folder_id IN (SELECT id FROM subfolders) AND owner_id = $2;
+            `;
+            queryParams.push(userId);
+        }
+
+        const filesToDelete = await pool.query(recursiveQuery, queryParams);
 
         for (const file of filesToDelete.rows) {
             const filePath = path.join(UPLOADS_DIR, file.storage_filename);
@@ -124,10 +147,15 @@ router.delete('/:id', async (req, res) => {
             }
         }
 
-        await pool.query(
-            'DELETE FROM folders WHERE id = $1 AND owner_id = $2',
-            [folderId, userId]
-        );
+        let deleteFolderQuery = 'DELETE FROM folders WHERE id = $1';
+        let deleteFolderParams = [folderId];
+        
+        if (!isAdmin) {
+            deleteFolderQuery += ' AND owner_id = $2';
+            deleteFolderParams.push(userId);
+        }
+
+        await pool.query(deleteFolderQuery, deleteFolderParams);
 
         return res.status(200).json({ message: 'Folder deleted successfully' });
     } catch (error) {

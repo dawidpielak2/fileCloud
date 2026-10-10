@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs/promises');
 const pool = require('../db/pool');
+const requireRole = require('../middlewares/rbacMiddleware');
 
 const router = express.Router();
 const UPLOADS_DIR = path.join(__dirname, '../uploads');
@@ -101,11 +102,17 @@ router.delete('/:id', async (req, res) => {
     try {
         const fileId = req.params.id;
         const userId = req.user.id;
+        const isAdmin = req.user.roles && req.user.roles.includes('admin');
 
-        const { rows } = await pool.query(
-            'SELECT storage_filename FROM files WHERE id = $1 AND owner_id = $2',
-            [fileId, userId]
-        );
+        let selectQuery = 'SELECT storage_filename FROM files WHERE id = $1';
+        let selectParams = [fileId];
+        
+        if (!isAdmin) {
+            selectQuery += ' AND owner_id = $2';
+            selectParams.push(userId);
+        }
+
+        const { rows } = await pool.query(selectQuery, selectParams);
 
         if (rows.length === 0) {
             return res.status(404).json({ error: 'File not found or unauthorized' });
@@ -113,10 +120,15 @@ router.delete('/:id', async (req, res) => {
 
         const storageFilename = rows[0].storage_filename;
 
-        await pool.query(
-            'DELETE FROM files WHERE id = $1 AND owner_id = $2',
-            [fileId, userId]
-        );
+        let deleteQuery = 'DELETE FROM files WHERE id = $1';
+        let deleteParams = [fileId];
+        
+        if (!isAdmin) {
+            deleteQuery += ' AND owner_id = $2';
+            deleteParams.push(userId);
+        }
+
+        await pool.query(deleteQuery, deleteParams);
 
         const physicalFilePath = path.join(UPLOADS_DIR, storageFilename);
 
