@@ -17,7 +17,7 @@ variables:
 # TEST
 # ==========================================
 lint:
-  stage: test
+  stage: test1
   image: node:${NODE_VERSION}-alpine
   cache:
     key: backend-depts
@@ -30,8 +30,9 @@ lint:
 
 gitleaks:
   stage: test
-  image: zricethezav/gitleaks:v8.18.2
-  entrypoint: [""]
+  image: 
+    name: zricethezav/gitleaks:v8.18.2
+    entrypoint: [""]
   script:
     - gitleaks detect --source=. --report-path=gitleaks-report.json --verbose
   artifacts:
