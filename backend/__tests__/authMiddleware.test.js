@@ -77,7 +77,8 @@ describe('authMiddleware', () => {
       expect(req.user).toEqual({
         id: 'user-uuid-123',
         email: 'test@example.com',
-        username: 'testuser'
+        username: 'testuser',
+        roles: []
       });
       done();
     });

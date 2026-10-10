@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test:unit": "jest tests",
+    "test:unit": "jest __tests__ --coverage --reporters=default --reporters=jest-junit",
     "test:integration": "jest integration_tests",
     "lint": "eslint ."
+  },
+  "jest-junit": {
+    "outputDirectory": "./",
+    "outputName": "test-report.xml"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +34,7 @@
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
     "jest": "^30.5.2",
+    "jest-junit": "^16.0.0",
     "supertest": "^7.3.0"
   }
 }
