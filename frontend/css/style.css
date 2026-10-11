@@ -1,0 +1,217 @@
+:root {
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --success: #10b981;
+    --success-hover: #059669;
+    --border-color: #e5e7eb;
+    --border-radius: 12px;
+    --transition-speed: 0.2s;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Typography & Layout */
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 40px 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    overflow: hidden;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border-color);
+    background: #fafafa;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #111827;
+}
+
+#userInfo {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Content Area */
+#appContent {
+    padding: 32px;
+}
+
+/* Breadcrumbs */
+#breadcrumbs {
+    font-size: 1.1rem;
+    margin-bottom: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crumb {
+    cursor: pointer;
+    color: var(--primary);
+    transition: color var(--transition-speed);
+}
+
+.crumb:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Controls Section */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.control-group strong {
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+/* Inputs & Buttons */
+input[type="text"], input[type="file"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.1s;
+    color: white;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#uploadBtn, #createFolderBtn { background-color: var(--primary); }
+#uploadBtn:hover:not(:disabled), #createFolderBtn:hover { background-color: var(--primary-hover); }
+
+#logoutBtn { background-color: #64748b; margin-left: 16px; }
+#logoutBtn:hover { background-color: #475569; }
+
+.action-btn { background-color: var(--danger); padding: 6px 12px; font-size: 0.75rem; }
+.action-btn:hover { background-color: var(--danger-hover); }
+
+.download-btn { background-color: var(--success); padding: 6px 12px; font-size: 0.75rem; }
+.download-btn:hover { background-color: var(--success-hover); }
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+th {
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-color);
+}
+
+td {
+    padding: 16px;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: #f8fafc; }
+
+.folder {
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color var(--transition-speed);
+}
+.folder:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Status & Errors */
+#statusMessage {
+    width: 100%;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.error {
+    color: var(--danger);
+    font-weight: 600;
+    text-align: center;
+    padding: 20px;
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple File Cloud</title>
+
+    <!-- Load Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Load Keycloak globally via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/keycloak-js@24/dist/keycloak.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h2>☁️ File Cloud</h2>
+                <div>
+                    <span id="userInfo">Not logged in</span>
+                    <button id="logoutBtn" style="display:none;">Logout</button>
+                </div>
+            </div>
+
+            <div id="appContent" style="display:none;">
+                <div id="breadcrumbs"></div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <strong>Upload File:</strong>
+                        <input type="file" id="fileInput">
+                        <button id="uploadBtn">Upload</button>
+                    </div>
+                    <div class="control-group">
+                        <strong>Create Folder:</strong>
+                        <input type="text" id="folderNameInput" placeholder="Folder Name">
+                        <button id="createFolderBtn">Create</button>
+                    </div>
+                    <div id="statusMessage" style="color: var(--success); margin-top: 10px; flex-basis: 100%;"></div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fileTableBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted);">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
