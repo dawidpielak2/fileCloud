@@ -5,13 +5,14 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 stages:
-  - test  
+  - test
   - build
   - integration
 
 variables:
   GIT_DEPTH: "0" # ensures full repository access for gitleaks
   NODE_VERSION: "20"
+  SERVER_PORT: "5000"
 
 # ==========================================
 # TEST
@@ -25,12 +26,12 @@ lint:
       - backend/node_modules/
   script:
     - cd backend
-    - npm install 
-    - npm run lint 
+    - npm install
+    - npm run lint
 
 gitleaks:
   stage: test
-  image: 
+  image:
     name: zricethezav/gitleaks:v8.18.2
     entrypoint: [""]
   script:
@@ -61,13 +62,21 @@ test_unit:
       - backend/coverage/
     expire_in: 7 days
 
+npm_audit:
+  stage: test
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - cd backend
+    - npm audit --audit-level=high #npm audit does not require npm install
+  allow_failure: true
+
 # ==========================================
 # BUILD
 # ==========================================
 
 build_backend:
   stage: build
-  image: docker:latest 
+  image: docker:latest
   services:
     - docker:24.0.5-dind
   variables:
