@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 
+const JWKS_URI = process.env.JWKS_URI || 'http://keycloak:8080/realms/file-cloud/protocol/openid-connect/certs';
+const JWT_ISSUER = process.env.JWT_ISSUER || 'http://localhost:8080/realms/file-cloud';
+
 const client = jwksClient({
-    jwksUri: 'http://keycloak:8080/realms/file-cloud/protocol/openid-connect/certs'
+    jwksUri: JWKS_URI
 });
 
 // Retrieves RSA public key from Keycloak JWKS for JWT signature verification
@@ -24,11 +27,10 @@ const authMiddleware = (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    console.log("DEBUG: Extracted token:", token);
 
     jwt.verify(token, getKey, {
         algorithms: ['RS256'],
-        issuer: 'http://localhost:8080/realms/file-cloud'
+        issuer: JWT_ISSUER
     }, (err, decoded) => {
         if (err) {
             console.error("JWT Verification Error:", err.message);

@@ -6,11 +6,16 @@ const pool = require('./db/pool');
 const authMiddleware = require('./middlewares/authMiddleware');
 const folderRouter = require('./routers/folderRouter');
 const filesRouter = require('./routers/filesRouter');
-const helmet = require('helmet'); 
+const helmet = require('helmet');
 
 const app = express();
 
-app.use(cors());
+// Restrict CORS to trusted frontend origins
+app.use(cors({
+    origin: [process.env.FRONTEND_URL || 'http://localhost:3000', 'http://127.0.0.1:3000'],
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(helmet());
 
@@ -49,7 +54,7 @@ app.get('/api/auth/me', authMiddleware, (req, res) => {
 app.use('/api/folders', authMiddleware, folderRouter);
 app.use('/api/files', authMiddleware, filesRouter);
 
-// Global error handler to gracefully catch malformed JSON requests (e.g. from ghost probes)
+// Global error handler
 app.use((err, req, res, next) => {
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
         console.warn('Caught malformed JSON request:', err.message);

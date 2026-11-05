@@ -48,9 +48,12 @@ services:
     build: ./backend
     restart: unless-stopped
     environment:
-      SERVER_PORT: ${SERVER_PORT}
+      SERVER_PORT: ${SERVER_PORT:-5000}
       DATABASE_URL: ${DATABASE_URL}
       JWKS_URI: ${JWKS_URI}
+      JWT_ISSUER: ${JWT_ISSUER:-http://localhost:8080/realms/file-cloud}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
     ports:
       - "${BIND_IP:-127.0.0.1}:${SERVER_PORT:-5000}:${SERVER_PORT:-5000}"
     healthcheck:
