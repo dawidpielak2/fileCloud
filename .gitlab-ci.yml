@@ -109,3 +109,55 @@ run_integration_tests:
     - npm run test:integration --prefix backend
   after_script:
     - docker compose down -v
+
+dast_scan:
+  stage: integration
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    BIND_IP: "0.0.0.0"
+  allow_failure: true
+  before_script:
+    - apk add --no-cache docker-cli-compose curl jq
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker compose up -d --wait
+
+    # Fetch JWT access token from Keycloak for authentication
+    - >
+      ACCESS_TOKEN=$(curl -s -X POST "http://docker:8080/realms/file-cloud/protocol/openid-connect/token" \
+        -H "Host: localhost:8080" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        -d "grant_type=password&client_id=file-cloud-client&username=test-user&password=test-user" | jq -r .access_token)
+
+    - |
+      if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
+        echo "Error: Failed to retrieve JWT token from Keycloak!"
+        exit 1
+      fi
+
+    # Run OWASP ZAP and injected Bearer token
+    - >
+      docker run --name zap-scanner --network host \
+        ghcr.io/zaproxy/zaproxy:stable \
+        zap-baseline.py --autooff -t http://docker:5000/api/auth/me \
+        -r zap-report.html \
+        -J zap-report.json \
+        -I \
+        -z "-config replacer.full_list(0).description=auth -config replacer.full_list(0).enabled=true -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=Authorization -config replacer.full_list(0).replacement=\"Bearer ${ACCESS_TOKEN}\"" || true
+
+    # Copy generated reports from DinD container to the runner workspace
+    - docker cp zap-scanner:/zap/wrk/zap-report.html ./zap-report.html || docker cp zap-scanner:/zap/zap-report.html ./zap-report.html || true
+    - docker cp zap-scanner:/zap/wrk/zap-report.json ./zap-report.json || docker cp zap-scanner:/zap/zap-report.json ./zap-report.json || true
+    - docker rm zap-scanner || true
+
+  after_script:
+    - docker compose down -v
+  artifacts:
+    when: always
+    paths:
+      - zap-report.html
+      - zap-report.json
+    expire_in: 7 days
