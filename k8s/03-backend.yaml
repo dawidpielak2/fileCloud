@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: file-cloud
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: filecloud-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          env:
+            - name: SERVER_PORT
+              value: "5000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: file-cloud-secrets
+                  key: database-url
+            - name: JWKS_URI
+              value: "http://keycloak:8080/realms/file-cloud/protocol/openid-connect/certs"
+            - name: JWT_ISSUER
+              value: "http://localhost:8080/realms/file-cloud"
+            - name: FRONTEND_URL
+              value: "http://localhost:3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: file-cloud
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
