@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: file-cloud
+
+resources:
+  - k8s/00-namespace.yaml
+  - k8s/01-secrets.yaml
+  - k8s/02-postgres.yaml
+  - k8s/03-backend.yaml
+  - k8s/05-keycloak.yaml
+
+configMapGenerator:
+  - name: keycloak-realm
+    files:
+      - realm-export.json=keycloak/realm-export.json
