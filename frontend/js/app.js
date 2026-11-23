@@ -1,5 +1,12 @@
-// Constants
-const API_BASE = `http://${window.location.hostname}:5000/api`;
+// Constants & Dynamic Ingress / Compose URL handling
+const isComposeDev = window.location.port === '3000';
+const API_BASE = isComposeDev 
+    ? `http://${window.location.hostname}:5000/api` 
+    : `${window.location.origin}/api`;
+const KEYCLOAK_URL = isComposeDev 
+    ? `http://${window.location.hostname}:8080` 
+    : window.location.origin;
+
 let currentFolderId = null;
 let breadcrumbs = [{ id: null, name: 'Root' }];
 let keycloak = null;
@@ -8,7 +15,7 @@ let keycloak = null;
 document.addEventListener('DOMContentLoaded', () => {
     try {
         keycloak = new Keycloak({
-            url: `http://${window.location.hostname}:8080`,
+            url: KEYCLOAK_URL,
             realm: 'file-cloud',
             clientId: 'file-cloud-client'
         });

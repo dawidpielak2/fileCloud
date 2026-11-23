@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 
 const JWKS_URI = process.env.JWKS_URI || 'http://keycloak:8080/realms/file-cloud/protocol/openid-connect/certs';
-const JWT_ISSUER = process.env.JWT_ISSUER || 'http://localhost:8080/realms/file-cloud';
+const rawIssuer = process.env.JWT_ISSUER || 'http://localhost:8080/realms/file-cloud,http://localhost/realms/file-cloud';
+const JWT_ISSUER = rawIssuer.includes(',') ? rawIssuer.split(',').map(s => s.trim()) : rawIssuer;
 
 const client = jwksClient({
     jwksUri: JWKS_URI

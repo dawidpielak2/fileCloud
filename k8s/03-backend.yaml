@@ -32,9 +32,9 @@ spec:
             - name: JWKS_URI
               value: "http://keycloak:8080/realms/file-cloud/protocol/openid-connect/certs"
             - name: JWT_ISSUER
-              value: "http://localhost:8080/realms/file-cloud"
+              value: "http://localhost/realms/file-cloud,http://localhost:8080/realms/file-cloud"
             - name: FRONTEND_URL
-              value: "http://localhost:3000"
+              value: "http://localhost"
 ---
 apiVersion: v1
 kind: Service

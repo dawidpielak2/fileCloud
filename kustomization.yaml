@@ -8,6 +8,8 @@ resources:
   - k8s/02-postgres.yaml
   - k8s/03-backend.yaml
   - k8s/05-keycloak.yaml
+  - k8s/06-frontend.yaml
+  - k8s/07-ingress.yaml
 
 configMapGenerator:
   - name: keycloak-realm
